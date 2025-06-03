@@ -62,6 +62,8 @@ def consultar_fretes_dinamicamente(
             base_query += " AND empresa LIKE %s"
             params.append(f"%{empresa}%")
 
+        base_query += " ORDER BY preco DESC LIMIT 3"
+
         cursor.execute(base_query, params)
         resultados = cursor.fetchall()
         return {"fretes": resultados}
