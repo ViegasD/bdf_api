@@ -43,7 +43,13 @@ def consultar_fretes_dinamicamente(
         )
         cursor = conn.cursor(dictionary=True)
 
-        base_query = "SELECT * FROM fretes WHERE 1=1"
+        base_query = """
+            SELECT 
+                origem, destino, produto, preco AS valor_por_tonelada,
+                km AS distancia_km, empresa, contatos AS contato
+            FROM fretes
+            WHERE 1=1
+        """
         params: List = []
 
         if origem:
@@ -66,7 +72,21 @@ def consultar_fretes_dinamicamente(
 
         cursor.execute(base_query, params)
         resultados = cursor.fetchall()
-        return {"fretes": resultados}
+
+        # Reformatar os dados para resposta clara
+        fretes_formatados = []
+        for f in resultados:
+            fretes_formatados.append({
+                "origem": f["origem"],
+                "destino": f["destino"],
+                "produto": f["produto"],
+                "valor_por_tonelada": f["valor_por_tonelada"],
+                "distancia_km": f["distancia_km"],
+                "empresa": f["empresa"],
+                "contato": f["contato"],
+            })
+
+        return {"fretes": fretes_formatados}
 
     except mysql.connector.Error as err:
         return {"erro": str(err)}
